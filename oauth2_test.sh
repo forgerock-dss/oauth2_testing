@@ -176,7 +176,7 @@ hitUserInfo() {
 }
 
 refreshToken() {
-	echo "Using the following refresh tokento generate new access token:"
+	echo "Using the following refresh token to generate new access token:"
 	echo "$REFRESH_TOKEN"
 	echo
 	echo "Current access token is: $ACCESS_TOKEN"

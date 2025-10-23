@@ -14,6 +14,9 @@ CLIENT_ID=XXXXXX
 # CLIENT_SECRET is not required for a public client but is required for token introspection
 CLIENT_SECRET=XXXXXX
 
+# Default for P1AIC is Login. Default for self-managed is ldapService
+AM_TREE=Login
+
 #Comment out CLIENT_TYPE as required
 CLIENT_TYPE=confidential
 #CLIENT_TYPE=public
@@ -23,7 +26,6 @@ REDIRECT_URL=https://httpbin.org/anything
 POST_LOGOUT_REDIRECT_URI=https://httpbin.org/anything
 USERNAME=demo
 PASSWORD=Ch4ng31t
-AM_TREE=Login
 
 #Public clients can no longer introspect tokens as a client secret is required.
 #To simulate a backend application which needs to introspect the public client access token a new introspect confidential OAuth2 client is created.
@@ -67,7 +69,7 @@ jqCheck() {
 
 getCookieName() {
 	echo "Getting cookie name"
-	AM_COOKIENAME=$($CURL "$AM_HOST"/json/serverinfo/\* | jq -r .cookieName)
+	AM_COOKIENAME=$($CURL "$AM_HOST"/json/realms/root/serverinfo/\* | jq -r .cookieName)
 	echo "CookieName is: $AM_COOKIENAME"
 }
 
@@ -145,7 +147,7 @@ hitTokenInfo() {
 
 decodeJWT() {
 	echo "Decoding ${1} token: ${2}"
-	jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"${2}"
+    echo "${2}" | awk -F. '{print $2}' | base64 --decode 2>/dev/null | jq .
 	echo ""
 	echo "*********************"
 }

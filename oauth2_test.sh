@@ -146,10 +146,17 @@ hitTokenInfo() {
 }
 
 decodeJWT() {
-	echo "Decoding ${1} token: ${2}"
-    echo "${2}" | awk -F. '{print $2}' | base64 --decode 2>/dev/null | jq .
-	echo ""
-	echo "*********************"
+  echo "Decoding ${1} token: ${2}"
+  jq -R '
+    split(".")[1]           # payload
+    | gsub("-"; "+")        # base64url -> base64
+    | gsub("_"; "/")
+    | . + (["","==","="][(length % 4)])  # padding
+    | @base64d
+    | fromjson
+  ' <<< "${2}"
+  echo ""
+  echo "*********************"
 }
 
 hitIntrospectAccessToken() {
